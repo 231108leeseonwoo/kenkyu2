@@ -1,5 +1,5 @@
-/* SignIn.css */
-.signin-container {
+/* SignUp.css */
+.signup-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -7,7 +7,7 @@
   background-color: #f4f4f4;
 }
 
-.signin-card {
+.signup-card {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -15,54 +15,54 @@
   width: 300px;
 }
 
-.signin-title {
+.signup-title {
   text-align: center;
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-.signin-form {
+.signup-form {
   display: flex;
   flex-direction: column;
 }
 
-.signin-input {
+.signup-input {
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
-.signin-button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.signin-button:hover {
-  background-color: #0056b3;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  text-align: center;
-}
-
 .signup-button {
-  margin-top: 10px;
   padding: 10px;
   background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  width: 100%;
 }
 
 .signup-button:hover {
   background-color: #218838;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.signup-footer {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.signup-footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-footer a:hover {
+  text-decoration: underline;
 }

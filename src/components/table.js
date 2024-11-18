@@ -26,6 +26,10 @@ export default function Table({ data }) {
               {events.season.name}
             </div>
 
+            <div className="flex justify-center">
+              {events.status.description}
+            </div>
+
             {/* Fixture details with flexbox for alignment */}
             <div className="w-full flex p-1 items-center">
               {/* Home Team */}

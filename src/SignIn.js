@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase-config";
-import './SignIn.css'; // 新しく追加するCSSファイルをインポート
+import { useNavigate } from 'react-router-dom'; // useNavigateをインポート
+import './SignIn.css'; // CSSファイルをインポート
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  
+  const navigate = useNavigate(); // useNavigateフックを使用してページ遷移を制御
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -16,9 +19,17 @@ const SignIn = () => {
       setPassword("");
       setError("");
       alert("Login successful!");
+
+      // ログイン成功後に /fixture に遷移
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  // 会員登録ページに遷移するための関数
+  const navigateToSignUp = () => {
+    navigate('/signup'); // /signup に遷移
   };
 
   return (
@@ -45,6 +56,11 @@ const SignIn = () => {
           <button type="submit" className="signin-button">Sign In</button>
         </form>
         {error && <p className="error-message">{error}</p>}
+
+        {/* 会員登録ボタン */}
+        <button onClick={navigateToSignUp} className="signup-button">
+          Create an Account
+        </button>
       </div>
     </div>
   );

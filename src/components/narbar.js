@@ -1,7 +1,37 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Linkをインポート
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Link と useNavigate をインポート
+import { auth } from "./../firebase-config"; // Firebase auth をインポート
+import { signOut } from "firebase/auth"; // Firebase の signOut 関数をインポート
 
 export default function NavBar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を追跡する状態
+  const navigate = useNavigate();
+
+  // Firebase の認証状態が変わった時に呼ばれる useEffect
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsLoggedIn(true); // ユーザーがログインしている場合
+      } else {
+        setIsLoggedIn(false); // ユーザーがログアウトしている場合
+      }
+    });
+
+    // クリーンアップ関数
+    return () => unsubscribe();
+  }, []);
+
+  // ログアウト処理
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Firebase の signOut 関数でログアウト
+      setIsLoggedIn(false); // ログアウト状態を反映
+      navigate("/"); // ログアウト後、ログインページに遷移
+    } catch (error) {
+      console.error("Logout error: ", error);
+    }
+  };
+
   return (
     <div className="navbar bg-base-100 sticky top-0" data-theme="dark">
       <div className="navbar-start">
@@ -55,8 +85,16 @@ export default function NavBar() {
         </ul>
       </div>
       <div className="navbar-end">
-        {/* LinkコンポーネントでSignInページに遷移 */}
-        <Link to="/signin" className="btn">LOGIN</Link>
+        {/* ログインしている場合はログアウトボタン、していない場合はログインボタンを表示 */}
+        {isLoggedIn ? (
+          <button onClick={handleLogout} className="btn">
+            LOGOUT
+          </button>
+        ) : (
+          <Link to="/signin" className="btn">
+            LOGIN
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -47,8 +47,9 @@ function App() {
           <Routes>
             {/* ログイン、サインアップ、試合詳細などのルート定義 */}
 
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/fixture" element={<Table data={fixtures} />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} /> {/* /signup で SignUp コンポーネントを表示 */}
+            <Route path="/" element={<Table data={fixtures} />} />
             <Route path="/fixture/:matchID" element={<Fixture data={fixtures} />} />
           </Routes>
         )}
