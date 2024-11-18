@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Linkをインポート
 
 export default function NavBar() {
   return (
@@ -54,7 +55,8 @@ export default function NavBar() {
         </ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">LOGIN</a>
+        {/* LinkコンポーネントでSignInページに遷移 */}
+        <Link to="/signin" className="btn">LOGIN</Link>
       </div>
     </div>
   );
