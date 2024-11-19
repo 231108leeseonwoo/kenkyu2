@@ -3,78 +3,98 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import BALLIMG from "../assets/images/1.png";
+import { useEffect, useState } from "react";
 
-export default function Fixture({data}) {
+export default function Fixture({ data }) {
     const params = useParams();
+    const matchID = params.customId;
 
-    const matchID = params.matchID;
-
-    const result = data.response.filter((match) => {
-        return match.fixture.id == matchID 
-    })  
+    const result = data.events.filter((match) => {
+        return match.customId == matchID;
+    });
 
     const fixture = result[0];
 
-    return(
+    const [currentTime, setCurrentTime] = useState(Date.now() / 1000);  // 現在のUNIXタイムスタンプ（秒）
+
+    // useEffectで毎秒タイムスタンプを更新
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now() / 1000);
+      }, 1000);  // 1秒ごとに更新
+    
+      return () => clearInterval(interval);  // コンポーネントがアンマウントされた時にインターバルをクリア
+    }, []);
+
+
+    return (
         <div className="bg-white pb-10">
             <div className="bg-white py-2">
-
                 <div align="center">
-                    <img src={fixture.league.logo} width={25} alt={fixture.league.name} />
-                    {fixture.league.name}
+                    {fixture.season.name}
                 </div>
 
                 <div className="text-center">
-                    {fixture.fixture.status.long}
+                    {fixture.status.description}
                 </div>
 
                 <div className="w-full flex p-1">
-                    <div className="w-[10%]" align="center">
-                        <img src={fixture.teams.home.logo} width={30} alt={fixture.teams.home.name} />
-                    </div>
-                    
                     <div className="w-[32%] text-right">
-                        {fixture.teams.home.name}
+                        {fixture.homeTeam.name}
                     </div>
 
-                    <div className="w-[16%] text-center">
-                        {fixture.goals.home} : {fixture.goals.away}
+                    <div className="w-[36%] text-center">
+                        {fixture.homeScore.current} : {fixture.awayScore.current}
                     </div>
 
                     <div className="w-[32%] text-left">
-                        {fixture.teams.away.name}
-                    </div>
-
-                    <div className="w-[10%]" align="center">
-                        <img src={fixture.teams.away.logo} width={30} alt={fixture.teams.away.name} />
+                        {fixture.awayTeam.name}
                     </div>
                 </div>
 
                 <div className="text-center text-green-600">
-                    {fixture.fixture.status.elapsed}
-                </div>
+              {/* 経過時間が存在する場合のみ表示 */}
+              {fixture.statusTime && fixture.statusTime.timestamp ? (
+                // 試合の開始時刻と現在時刻から経過時間を計算
+                (() => {
+                  const elapsedTime = currentTime - fixture.statusTime.timestamp;  // 経過時間（秒）
+                  const minutes = Math.floor(elapsedTime / 60);  // 分
+                  const seconds = Math.floor(elapsedTime % 60);  // 秒
+
+                  return (
+                    <span>
+                      {minutes}:{seconds < 10 ? '0' + seconds : seconds}
+                    </span>
+                  );
+                })()
+              ) : (
+                // 経過時間がない場合、進行状況を表示
+                <span>{fixture.status.description}</span>
+              )}
+            </div>
             </div>
 
-            <div align="center" className="grid gird-cols-1 divide-y">
+            {/* イベント情報の表示 */}
+            <div align="center" className="grid grid-cols-1 divide-y">
                 <h1 className="bg-gray-700 p-1 text-gray-300 text-xl">Events</h1>
                 
-                {!fixture.events ? null : fixture.events.map((event) => (
-                    <div className="p-5" key={event.team.id}>
-                        {event.type === "Goal" ? (
+                {fixture.events && fixture.events.length > 0 ? (
+                    fixture.events.map((event) => (
+                        <div className="p-5" key={event.team.id}>
                             <div>
                                 <img src={BALLIMG} width={15} alt="GOAL" />
                             </div>
-                        ) : (
-                            <div className="badge badge-secondary">{event.type}</div>
-                        )}{" "}
-                        {event.player.name} {" "} <img src={event.team.logo} width={20} />
-                        <br />
-                        <div className="text-green-700">{event.time.elapsed} `</div>
-                    </div>
-                ))}
+                            {event.player.name}
+                            <br />
+                        </div>
+                    ))
+                ) : (
+                    <div>No events found</div>
+                )}
             </div>
 
-            <div align="center" className="grid gird-cols-1 divide-y">
+            {/* スコアの表示 */}
+            {/* <div align="center" className="grid grid-cols-1 divide-y">
                 <h1 className="bg-gray-700 p-1 text-gray-300 text-xl">Score</h1>
                 <div className="p-2">
                     First Half
@@ -83,43 +103,32 @@ export default function Fixture({data}) {
                 </div>
                 {fixture.score.fulltime.home ? (
                     <div className="p-2">
-                    Full Time
-                    <br />
-                    {fixture.score.fulltime.home} : {fixture.score.fulltime.away}
-                </div>
+                        Full Time
+                        <br />
+                        {fixture.score.fulltime.home} : {fixture.score.fulltime.away}
+                    </div>
                 ) : null}
 
                 {fixture.score.fulltime.home ? (
                     <div className="p-2">
-                    Extra Time
-                    <br />
-                    {fixture.score.extratime.home} : {fixture.score.extratime.away}
-                </div>
+                        Extra Time
+                        <br />
+                        {fixture.score.extratime.home} : {fixture.score.extratime.away}
+                    </div>
                 ) : null}
 
                 {fixture.score.fulltime.home ? (
                     <div className="p-2">
-                    Penalty
-                    <br />
-                    {fixture.score.penalty.home} : {fixture.score.penalty.away}
-                </div>
+                        Penalty
+                        <br />
+                        {fixture.score.penalty.home} : {fixture.score.penalty.away}
+                    </div>
                 ) : null}
+            </div> */}
+         
+                     
 
-            </div>
-
-            <div align="center" className="grid gird-cols-1 divide-y">
-                <h1 className="bg-gray-700 p-1 text-gray-300 text-xl">Match Detail</h1>
-
-                <div className="p-2">Stadium - {fixture.fixture.venue.name}</div>
-                <div className="p-2">Country - {fixture.league.country}</div>
-                <div className="p-2">{fixture.league.round}</div>
-                <div className="p-2">{fixture.league.season}</div>
-            </div>
-
-            <div className="text-center">
-                <button className="bg-gray-500 btn btn-wide">Pay for Live Odds</button>
-            </div>
+   
         </div>
-             
-    )
+    );
 }

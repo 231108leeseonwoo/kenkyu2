@@ -50,7 +50,7 @@ function App() {
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} /> {/* /signup で SignUp コンポーネントを表示 */}
             <Route path="/" element={<Table data={fixtures} />} />
-            <Route path="/fixture/:matchID" element={<Fixture data={fixtures} />} />
+            <Route path="/events/:customId" element={<Fixture data={fixtures} />} />
           </Routes>
         )}
 
