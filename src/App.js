@@ -10,13 +10,17 @@ import Footer from "./components/footer";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import Table from "./components/table";  // テーブルコンポーネント
+// eslint-disable-next-line no-unused-vars
 import { fetchFixtures } from "./lib/fetch-data";  // データ取得用の関数
+// eslint-disable-next-line no-unused-vars
+import { fetchFixtures2 } from "./lib/fetch-data2";  // データ取得用の関数
+
 
 function App() {
   const [fixtures, setFixtures] = useState([]);
 
   const fetchData = async () => {
-    const result = await fetchFixtures();
+    const result = await fetchFixtures2();
     setFixtures(result);
   };
 
