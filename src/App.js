@@ -16,9 +16,13 @@ import Table2 from "./components/table2";  // テーブルコンポーネント
 // eslint-disable-next-line no-unused-vars
 import Table3 from "./components/table3";
 // eslint-disable-next-line no-unused-vars
+import Table4 from "./components/table3";
+// eslint-disable-next-line no-unused-vars
 import { fetchFixtures } from "./lib/fetch-data";  // データ取得用の関数
 // eslint-disable-next-line no-unused-vars
 import { fetchFixtures2 } from "./lib/fetch-data2";  // データ取得用の関数
+import { fetchFixtures3 } from "./lib/fetch-data3";  // データ取得用の関数
+
 
 
 function App() {
@@ -54,6 +58,21 @@ function App() {
 
 
 
+  const [fixtures3, setFixtures3] = useState([]);
+
+  const fetchData3 = async () => {
+    const result = await fetchFixtures3();
+    setFixtures3(result);
+  };
+
+  useEffect(() => {
+    fetchData3();
+  }, []);
+
+  console.log(fixtures3);
+
+
+
   const refresh = () => window.location.reload(true);
 
   return (
@@ -84,6 +103,11 @@ function App() {
 
             <Route path="/odds" element={<Table2 data={fixtures2} />} />
             <Route path="/oddsDetail/:id" element={<Table3 data={fixtures2} />} />
+            <Route path="/odds2/:customId" element={<Table3 data={fixtures2} />} />
+            
+            <Route path="/match" element={<Table4 data={fixtures3} />} />
+            
+            
           </Routes>
         )}
 

@@ -6,7 +6,9 @@ export const fetchFixtures = async () => {
         // 'x-rapidapi-key': 'fc101756ecmsh27b4f751a349a75p13ff75jsn0bd58c4b0d52',
         // 'x-rapidapi-key': 'cb77a2275amsh67211e0194f3276p1e834ejsn68572125ef0d',  
         // 'x-rapidapi-key': 'b6fd1cb83amsh91d6a45657328abp13eec7jsn1b18469f2d63',
-        'x-rapidapi-key': 'b83399e51bmshb5a29347683b39fp16fa44jsn6ae173e4b95d',
+        // 'x-rapidapi-key': 'b83399e51bmshb5a29347683b39fp16fa44jsn6ae173e4b95d',
+       // 'x-rapidapi-key': 'fdc8ddca28msh75e20876732fe9cp16024ejsnec4f62fd74d6',
+       'x-rapidapi-key': '7f82c106femsh86395b53d572801p1a530djsndfe41c97529c',
         'x-rapidapi-host': 'sportapi7.p.rapidapi.com'
       }
     };
