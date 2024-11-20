@@ -13,23 +13,64 @@ export default function Table2({ data }) {
   // oddsはオブジェクトなので、その値を配列に変換する
   const events = Object.values(data.odds); // oddsオブジェクトの値を配列に変換
 
+  // fractionalValueを倍数に変換する関数
+  const convertFractionalToMultiplier = (fractionalValue) => {
+    if (!fractionalValue) return null;
+    const [numerator, denominator] = fractionalValue.split("/").map(Number);
+    return numerator && denominator ? (numerator / denominator + 1).toFixed(2) : null; // 1を足して倍数に変換
+  };
+
+  // "的中" のデザインクラスを決定する関数
+  const getWinningClass = (isWinning) => {
+    return isWinning ? "bg-green-500 text-white font-bold" : ""; // 的中した場合は緑色の背景
+  };
+
   return (
     <div className="bg-gray-400 grid grid-cols-1 divide-y text-black">
       {events.map((odds) => (
-        // odds.id がユニークであると仮定していますが、もし重複の可能性があれば
-        // odds.id と市場名 (odds.marketName) を組み合わせて key を生成できます
         <Link to={`/oddsDetail/${odds.id}`} key={odds.id}>
-          <div className="bg-white py-2">
-            <div className="flex justify-center">
-              {/* marketName と marketId を表示 */}
-              <div>
-                <p>Market Name: {odds.marketName}</p>
-                <p>Market ID: {odds.marketId}</p>
+          <div className="bg-white py-4 px-6 rounded-lg shadow-md my-2">
+            <div className="text-center mb-4">
+              {/* 競技ごとのオッズ */}
+              <h2 className="text-xl font-bold mb-2">Market ID: {odds.marketName}</h2>
+              <p className="text-sm text-gray-600">ID: {odds.id}</p>
+            </div>
+
+            {/* オッズの詳細表示 */}
+            <div className="grid grid-cols-3 gap-4">
+              {/* Win */}
+              <div className={`text-center p-2 ${getWinningClass(odds.choices[0]?.winning)}`}>
+                <h3 className="text-lg font-semibold">Win</h3>
+                <p className="text-xl text-blue-500">
+                  {convertFractionalToMultiplier(odds.choices[0]?.fractionalValue)}x
+                  <span className="text-sm text-gray-500">
+                    【{convertFractionalToMultiplier(odds.choices[0]?.initialFractionalValue)}x】
+                  </span>
+                </p>
+              </div>
+
+              {/* Draw */}
+              <div className={`text-center p-2 ${getWinningClass(odds.choices[1]?.winning)}`}>
+                <h3 className="text-lg font-semibold">Draw</h3>
+                <p className="text-xl text-yellow-500">
+                  {convertFractionalToMultiplier(odds.choices[1]?.fractionalValue)}x
+                  <span className="text-sm text-gray-500">
+                    【{convertFractionalToMultiplier(odds.choices[1]?.initialFractionalValue)}x】
+                  </span>
+                </p>
+              </div>
+
+              {/* Defeat */}
+              <div className={`text-center p-2 ${getWinningClass(odds.choices[2]?.winning)}`}>
+                <h3 className="text-lg font-semibold">Defeat</h3>
+                <p className="text-xl text-red-500">
+                  {convertFractionalToMultiplier(odds.choices[2]?.fractionalValue)}x
+                  <span className="text-sm text-gray-500">
+                    【{convertFractionalToMultiplier(odds.choices[2]?.initialFractionalValue)}x】
+                  </span>
+                </p>
               </div>
             </div>
-          </div>
-          <div className="text-center text-green-600">
-            {/* 必要に応じて他のコンテンツをここに追加できます */}
           </div>
         </Link>
       ))}

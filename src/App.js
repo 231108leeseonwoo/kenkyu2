@@ -13,10 +13,9 @@ import SignIn from "./SignIn";
 import Table from "./components/table";
 // eslint-disable-next-line no-unused-vars
 import Table2 from "./components/table2";  // テーブルコンポーネント
+
 // eslint-disable-next-line no-unused-vars
-import Table3 from "./components/table3";
-// eslint-disable-next-line no-unused-vars
-import Table4 from "./components/table3";
+import Table4 from "./components/table4";
 // eslint-disable-next-line no-unused-vars
 import { fetchFixtures } from "./lib/fetch-data";  // データ取得用の関数
 // eslint-disable-next-line no-unused-vars
@@ -102,8 +101,7 @@ function App() {
 
 
             <Route path="/odds" element={<Table2 data={fixtures2} />} />
-            <Route path="/oddsDetail/:id" element={<Table3 data={fixtures2} />} />
-            <Route path="/odds2/:customId" element={<Table3 data={fixtures2} />} />
+
             
             <Route path="/match" element={<Table4 data={fixtures3} />} />
             
