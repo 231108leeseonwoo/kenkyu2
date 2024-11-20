@@ -4,14 +4,17 @@ export const fetchFixtures2 = async () => {
     headers: {
       // 'x-rapidapi-key': '1a670cae8fmsh4aec3caa1c0c3c2p1c03c9jsn3379edea8e6a',
       // 'x-rapidapi-key': 'fc101756ecmsh27b4f751a349a75p13ff75jsn0bd58c4b0d52',
-      'x-rapidapi-key': 'cb77a2275amsh67211e0194f3276p1e834ejsn68572125ef0d',
+      // 'x-rapidapi-key': 'cb77a2275amsh67211e0194f3276p1e834ejsn68572125ef0d',
+     // 'x-rapidapi-key': 'b6fd1cb83amsh91d6a45657328abp13eec7jsn1b18469f2d63',
+      'x-rapidapi-key': 'b83399e51bmshb5a29347683b39fp16fa44jsn6ae173e4b95d',
       'x-rapidapi-host': 'sportapi7.p.rapidapi.com'
     }
   };
 
   const result = await fetch(
     // "https://sportapi7.p.rapidapi.com/api/v1/sport/football/events/live",
-    "https://sportapi7.p.rapidapi.com/api/v1/odds/%7Bid%7D/featured-events/%7Bsport%7D",
+    // "https://sportapi7.p.rapidapi.com/api/v1/odds/%7Bid%7D/featured-events/%7Bsport%7D",
+    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/odds/1/2024-03-05",
     options
   )
     .then((response) => response.json())

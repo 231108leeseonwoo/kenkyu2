@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
-export default function Table({ data }) {
+export default function Table3({ data }) {
   const [currentTime, setCurrentTime] = useState(Date.now() / 1000);  // 現在のUNIXタイムスタンプ（秒）
 
   // useEffectで毎秒タイムスタンプを更新

@@ -63,7 +63,7 @@ export default function NavBar() {
               <a className="justify-between">Results</a>
             </li>
             <li>
-              <a>Odds</a>
+              <Link to="/odds" className="justify-between">Odds</Link> {/* Oddsリンクに変更 */}
             </li>
           </ul>
         </div>
@@ -80,7 +80,7 @@ export default function NavBar() {
             <a>Results</a>
           </li>
           <li>
-            <a>Odds</a>
+            <Link to="/odds" className="justify-between">Odds</Link> {/* Oddsリンクに変更 */}
           </li>
         </ul>
       </div>
