@@ -1,3 +1,97 @@
+// import React, { useEffect, useState } from "react";
+// import './App.css';
+// import NarBar from "./components/narbar";
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import Fixture from "./components/fixture";
+// import CircularProgress from '@mui/material/CircularProgress';
+// import Box from '@mui/material/Box';
+// import Footer from "./components/footer";
+// import SignUp from "./SignUp";
+// import SignIn from "./SignIn";
+// import Table from "./components/table";
+// import Table2 from "./components/table2";
+// import Table4 from "./components/table4";
+// import { fetchFixtures } from "./lib/fetch-data";
+// import { fetchFixtures2 } from "./lib/fetch-data2";
+// import { fetchFixtures3 } from "./lib/fetch-data3";
+
+// function App() {
+//   const [fixtures, setFixtures] = useState([]);
+//   const [fixtures2, setFixtures2] = useState([]);
+//   const [fixtures3, setFixtures3] = useState([]);
+
+//   const fetchData = async () => {
+//     const result1 = await fetchFixtures();
+//     setFixtures(result1);
+
+//     const result2 = await fetchFixtures2();
+//     setFixtures2(result2);
+
+//     const result3 = await fetchFixtures3();
+//     setFixtures3(result3);
+//   };
+
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   const refresh = () => window.location.reload(true);
+
+//   // データがすべて取得されたか確認
+//   if (fixtures.length === 0 || fixtures2.length === 0 || fixtures3.length === 0) {
+//     return (
+//       <div className="h-screen bg-white w-full text-center p-10">
+//         <Box>
+//           <CircularProgress />
+//         </Box>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="w-full md:w-[700px] lg:w-[800px] m-auto">
+//       <BrowserRouter>
+//         <NarBar />
+//         <button onClick={refresh} className="btn bg-black text-white btn-sm fixed bottom-3 right-2 z-40">
+//           refresh
+//         </button>
+
+//         <Routes>
+//           <Route path="/" element={<Table data={fixtures} />} />
+//           <Route path="/signIn" element={<SignIn />} />
+//           <Route path="/signup" element={<SignUp />} />
+//           <Route path="/events/:customId" element={<Fixture data={fixtures} />} />
+//           <Route path="/odds" element={<Table2 data={fixtures2} />} />
+//           <Route path="/match" element={<Table4 data={fixtures3} data2={fixtures2} />} />
+//         </Routes>
+
+//         <Footer />
+//       </BrowserRouter>
+//     </div>
+//   );
+// }
+
+// export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import './App.css';
 import NarBar from "./components/narbar";  // ナビゲーションバーのコンポーネント
