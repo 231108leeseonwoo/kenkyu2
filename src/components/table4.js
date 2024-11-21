@@ -21,6 +21,12 @@ export default function Table4({ data, data2 }) {
     return <div>Loading...</div>;  // データがまだロードされていない場合、または空の場合
   }
 
+  // fractionalオッズを倍数に変換する関数
+  const convertFractionalToDecimal = (fractionalValue) => {
+    const [numerator, denominator] = fractionalValue.split('/').map(Number);
+    return (numerator / denominator) + 1;  // 例: "83/100" -> 1.83
+  };
+
   return (
     <div className="bg-gray-400 grid grid-cols-1 divide-y text-black">
       {/* data.events は単一の配列なので、直接 map でループ */}
@@ -89,9 +95,9 @@ export default function Table4({ data, data2 }) {
                     <div className={`text-center p-2 ${oddsData.choices[0]?.winning ? "bg-green-500 text-white font-bold" : ""}`}>
                       <h3 className="text-lg font-semibold">Win</h3>
                       <p className="text-xl text-blue-500">
-                        {oddsData.choices[0]?.fractionalValue}x
+                        {oddsData.choices[0]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[0]?.fractionalValue).toFixed(2) : "N/A"}
                         <span className="text-sm text-gray-500">
-                          【{oddsData.choices[0]?.initialFractionalValue}x】
+                        【{oddsData.choices[0]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[0]?.initialFractionalValue).toFixed(2) : "N/A"}】
                         </span>
                       </p>
                     </div>
@@ -100,9 +106,9 @@ export default function Table4({ data, data2 }) {
                     <div className={`text-center p-2 ${oddsData.choices[1]?.winning ? "bg-green-500 text-white font-bold" : ""}`}>
                       <h3 className="text-lg font-semibold">Draw</h3>
                       <p className="text-xl text-yellow-500">
-                        {oddsData.choices[1]?.fractionalValue}x
+                        {oddsData.choices[1]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[1]?.fractionalValue).toFixed(2) : "N/A"}
                         <span className="text-sm text-gray-500">
-                          【{oddsData.choices[1]?.initialFractionalValue}x】
+                        【{oddsData.choices[1]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[1]?.initialFractionalValue).toFixed(2) : "N/A"}】
                         </span>
                       </p>
                     </div>
@@ -111,9 +117,9 @@ export default function Table4({ data, data2 }) {
                     <div className={`text-center p-2 ${oddsData.choices[2]?.winning ? "bg-green-500 text-white font-bold" : ""}`}>
                       <h3 className="text-lg font-semibold">Defeat</h3>
                       <p className="text-xl text-red-500">
-                        {oddsData.choices[2]?.fractionalValue}x
+                        {oddsData.choices[2]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[2]?.fractionalValue).toFixed(2) : "N/A"}
                         <span className="text-sm text-gray-500">
-                          【{oddsData.choices[2]?.initialFractionalValue}x】
+                          【{oddsData.choices[2]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[2]?.initialFractionalValue).toFixed(2) : "N/A"}】
                         </span>
                       </p>
                     </div>
