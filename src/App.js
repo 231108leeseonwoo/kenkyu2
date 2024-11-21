@@ -103,7 +103,8 @@ function App() {
             <Route path="/odds" element={<Table2 data={fixtures2} />} />
 
             
-            <Route path="/match" element={<Table4 data={fixtures3} />} />
+            <Route path="/match" element={<Table4 data={fixtures3} data2={fixtures2} />} />
+
             
             
           </Routes>

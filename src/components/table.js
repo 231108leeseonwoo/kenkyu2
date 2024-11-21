@@ -1,10 +1,8 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
-//2
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-// eslint-disable-next-line react/prop-types
 export default function Table({ data }) {
   const [currentTime, setCurrentTime] = useState(Date.now() / 1000);  // 現在のUNIXタイムスタンプ（秒）
 
@@ -17,6 +15,10 @@ export default function Table({ data }) {
     return () => clearInterval(interval);  // コンポーネントがアンマウントされた時にインターバルをクリア
   }, []);
 
+  if (!data || !data.events || data.events.length === 0) {
+    return <div>Loading...</div>;  // データがない場合のエラーハンドリング
+  }
+
   return (
     <div className="bg-gray-400 grid grid-cols-1 divide-y text-black">
       {data.events.map((events) => (
@@ -24,28 +26,34 @@ export default function Table({ data }) {
           <div className="bg-white py-2">
             {/* Season Name */}
             <div className="flex justify-center">
-              {events.season.name}
+              {events.season ? events.season.name : "No season name"}
             </div>
 
             <div className="flex justify-center">
-              {events.status.description}
+              {events.status ? events.status.description : "No status"}
             </div>
 
             {/* Fixture details with flexbox for alignment */}
             <div className="w-full flex p-1 items-center">
               {/* Home Team */}
               <div className="w-[32%] text-left">
-                {events.homeTeam.name}
+                {events.homeTeam ? events.homeTeam.name : "No home team"}
               </div>
 
               {/* Score */}
               <div className="w-[36%] text-center">
-                {events.homeScore.current} : {events.awayScore.current}
+                {events.homeScore && events.homeScore.current !== undefined
+                  ? events.homeScore.current
+                  : "0"}{" "}
+                :{" "}
+                {events.awayScore && events.awayScore.current !== undefined
+                  ? events.awayScore.current
+                  : "0"}
               </div>
 
               {/* Away Team */}
               <div className="w-[32%] text-right">
-                {events.awayTeam.name}
+                {events.awayTeam ? events.awayTeam.name : "No away team"}
               </div>
             </div>
 
@@ -67,10 +75,9 @@ export default function Table({ data }) {
                 })()
               ) : (
                 // 経過時間がない場合、進行状況を表示
-                <span>{events.status.description}</span>
+                <span>{events.status ? events.status.description : "No status"}</span>
               )}
             </div>
-
           </div>
         </Link>
       ))}
