@@ -42,10 +42,7 @@ export default function Table4({ data, data2 }) {
                 {event.season ? event.season.name : "No Season Name"}
               </div>
 
-              <div className="flex justify-center">
-                {event.status.description}
-              </div>
-
+        
               {/* Fixture details with flexbox for alignment */}
               <div className="w-full flex p-1 items-center">
                 {/* Home Team */}
@@ -89,7 +86,7 @@ export default function Table4({ data, data2 }) {
               {/* オッズの詳細表示（oddsDataが存在する場合） */}
               {oddsData && (
                 <div className="mt-4">
-                  <h3 className="text-lg font-semibold">Odds for {event.homeTeam.name} vs {event.awayTeam.name}</h3>
+                  
                   <div className="grid grid-cols-3 gap-4">
                     {/* Win */}
                     <div className={`text-center p-2 ${oddsData.choices[0]?.winning ? "bg-green-500 text-white font-bold" : ""}`}>
