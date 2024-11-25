@@ -1,13 +1,25 @@
 // /* eslint-disable react/no-unknown-property */
 // /* eslint-disable react/prop-types */
 // import React, { useState, useEffect } from "react";
+// import { useNavigate } from 'react-router-dom'; // 画面遷移用
+// import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase Authenticationをインポート
 
 // export default function Table4({ data, data2 }) {
-//   const [currentTime, setCurrentTime] = useState(Date.now() / 1000);  // 現在のUNIXタイムスタンプ（秒）
+//   // Firebase Authentication
+//   const auth = getAuth();
+//   const navigate = useNavigate(); // React Routerのnavigateフック
+
+//   // ステート管理
+//   // eslint-disable-next-line no-unused-vars
+//   const [currentTime, setCurrentTime] = useState(Date.now() / 1000); // 現在のUNIXタイムスタンプ（秒）
 //   const [selectedOdds, setSelectedOdds] = useState({}); // 選択したオッズのオブジェクト形式で保持
 //   const [totalOdds, setTotalOdds] = useState(1); // 予想配当率
 //   const [betAmount, setBetAmount] = useState(""); // ユーザーが入力した金額（空文字で初期化）
 //   const [predictedAmount, setPredictedAmount] = useState(0); // 予想金額
+//   // eslint-disable-next-line no-unused-vars
+//   const [balance, setBalance] = useState(100); // 仮想残高（暗号資産から取得する値を後で設定）
+//   const [errorMessage, setErrorMessage] = useState(""); // エラーメッセージの状態管理
+//   const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を管理
 
 //   // useEffectで毎秒タイムスタンプを更新
 //   useEffect(() => {
@@ -15,8 +27,20 @@
 //       setCurrentTime(Date.now() / 1000);
 //     }, 1000);  // 1秒ごとに更新
 
-//     return () => clearInterval(interval);  // コンポーネントがアンマウントされた時にインターバルをクリア
-//   }, []);
+//     // Firebase Authenticationのログイン状態を監視
+//     const unsubscribe = onAuthStateChanged(auth, (user) => {
+//       if (user) {
+//         setIsLoggedIn(true);  // ユーザーがログインしている場合
+//       } else {
+//         setIsLoggedIn(false); // ユーザーがログインしていない場合
+//       }
+//     });
+
+//     return () => {
+//       clearInterval(interval); // コンポーネントがアンマウントされた時にインターバルをクリア
+//       unsubscribe(); // Authenticationの監視を解除
+//     };
+//   }, [auth]);
 
 //   // `data` や `data.events` が存在するか確認し、データが存在しない場合は "Loading..." を表示
 //   if ((!data || !Array.isArray(data.events) || data.events.length === 0) || (!data2 || !data2.odds)) {
@@ -59,16 +83,36 @@
 //     const amount = parseFloat(e.target.value) || ""; // 入力が無効な場合は空文字
 //     setBetAmount(amount);
 
-//     // 金額が入力されるたびに予想金額を更新
+//     // 金額が変更された際に予想金額を更新
 //     const newPredictedAmount = amount * totalOdds;
 //     setPredictedAmount(newPredictedAmount);
+
+//     // 残高チェック
+//     if (amount > balance) {
+//       setErrorMessage("Your bet amount exceeds your available balance.");
+//     } else {
+//       setErrorMessage(""); // エラーメッセージをクリア
+//     }
+//   };
+
+//   // 次の画面に進む処理（ログイン状態をチェック）
+//   const handleNavigate = () => {
+//     if (!isLoggedIn) {
+//       // ログインしていない場合は、ログイン画面にリダイレクト
+//       navigate("/signIn");
+//     } else {
+//       if (betAmount > balance) {
+//         setErrorMessage("Your bet amount exceeds your available balance.");
+//       } else {
+//         // 金額が残高内であれば遷移
+//         navigate("/nextpage");  // 次の画面（ここでは仮のURL）
+//       }
+//     }
 //   };
 
 //   return (
 //     <div className="bg-gray-400 grid grid-cols-1 divide-y text-black">
-//       {/* data.events は単一の配列なので、直接 map でループ */}
 //       {data.events.map((event) => {
-//         // odds オブジェクト内のキーと一致するものを取得
 //         const oddsData = data2.odds[event.id]; // event.id と odds のキーを一致させる
 
 //         return (
@@ -80,49 +124,21 @@
 
 //             {/* Fixture details with flexbox for alignment */}
 //             <div className="w-full flex p-1 items-center">
-//               {/* Home Team */}
 //               <div className="w-[32%] text-left">
 //                 {event.homeTeam ? event.homeTeam.name : "No Home Team"}
 //               </div>
-
-//               {/* Score */}
 //               <div className="w-[36%] text-center">
 //                 {event.homeScore ? event.homeScore.current : "-"} : {event.awayScore ? event.awayScore.current : "-"}
 //               </div>
-
-//               {/* Away Team */}
 //               <div className="w-[32%] text-right">
 //                 {event.awayTeam ? event.awayTeam.name : "No Away Team"}
 //               </div>
 //             </div>
 
-//             {/* Display elapsed time or match status */}
-//             <div className="text-center text-green-600">
-//               {/* 経過時間が存在する場合のみ表示 */}
-//               {event.statusTime && event.statusTime.timestamp ? (
-//                 // 試合の開始時刻と現在時刻から経過時間を計算
-//                 (() => {
-//                   const elapsedTime = currentTime - event.statusTime.timestamp;  // 経過時間（秒）
-//                   const minutes = Math.floor(elapsedTime / 60);  // 分
-//                   const seconds = Math.floor(elapsedTime % 60);  // 秒
-
-//                   return (
-//                     <span>
-//                       {minutes}:{seconds < 10 ? '0' + seconds : seconds}
-//                     </span>
-//                   );
-//                 })()
-//               ) : (
-//                 // 経過時間がない場合、進行状況を表示
-//                 <span>{event.status.description}</span>
-//               )}
-//             </div>
-
-//             {/* オッズの詳細表示（oddsDataが存在する場合） */}
+//             {/* オッズの詳細表示 */}
 //             {oddsData && (
 //               <div className="mt-4">
 //                 <div className="grid grid-cols-3 gap-4">
-//                   {/* Win */}
 //                   <div
 //                     className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'win' ? "bg-green-500 text-white font-bold" : ""}`}
 //                     onClick={() => handleOddsClick(event.customId, 'win', convertFractionalToDecimal(oddsData.choices[0]?.fractionalValue).toFixed(2))}
@@ -130,13 +146,9 @@
 //                     <h3 className="text-lg font-semibold">Win</h3>
 //                     <p className="text-xl text-blue-500">
 //                       {oddsData.choices[0]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[0]?.fractionalValue).toFixed(2) : "N/A"}
-//                       <span className="text-sm text-gray-500">
-//                         【{oddsData.choices[0]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[0]?.initialFractionalValue).toFixed(2) : "N/A"}】
-//                       </span>
 //                     </p>
 //                   </div>
 
-//                   {/* Draw */}
 //                   <div
 //                     className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'draw' ? "bg-yellow-500 text-white font-bold" : ""}`}
 //                     onClick={() => handleOddsClick(event.customId, 'draw', convertFractionalToDecimal(oddsData.choices[1]?.fractionalValue).toFixed(2))}
@@ -144,13 +156,9 @@
 //                     <h3 className="text-lg font-semibold">Draw</h3>
 //                     <p className="text-xl text-green-500">
 //                       {oddsData.choices[1]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[1]?.fractionalValue).toFixed(2) : "N/A"}
-//                       <span className="text-sm text-gray-500">
-//                         【{oddsData.choices[1]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[1]?.initialFractionalValue).toFixed(2) : "N/A"}】
-//                       </span>
 //                     </p>
 //                   </div>
 
-//                   {/* Defeat */}
 //                   <div
 //                     className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'defeat' ? "bg-red-500 text-white font-bold" : ""}`}
 //                     onClick={() => handleOddsClick(event.customId, 'defeat', convertFractionalToDecimal(oddsData.choices[2]?.fractionalValue).toFixed(2))}
@@ -158,9 +166,6 @@
 //                     <h3 className="text-lg font-semibold">Defeat</h3>
 //                     <p className="text-xl text-blue-500">
 //                       {oddsData.choices[2]?.fractionalValue ? convertFractionalToDecimal(oddsData.choices[2]?.fractionalValue).toFixed(2) : "N/A"}
-//                       <span className="text-sm text-gray-500">
-//                         【{oddsData.choices[2]?.initialFractionalValue ? convertFractionalToDecimal(oddsData.choices[2]?.initialFractionalValue).toFixed(2) : "N/A"}】
-//                       </span>
 //                     </p>
 //                   </div>
 //                 </div>
@@ -177,14 +182,22 @@
 //                 className="p-2 w-full border rounded-md"
 //                 placeholder="Enter amount"
 //               />
+//               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 //               <div className="mt-2">
 //                 <h3 className="text-lg">Total Odds:</h3>
 //                 <p className="text-2xl font-bold">{totalOdds.toFixed(2)}</p>
 //               </div>
 //               <div className="mt-2">
 //                 <h3 className="text-lg">Predicted Earnings:</h3>
-//                 <p className="text-2xl font-bold">{predictedAmount.toFixed(0)}</p>
+//                 <p className="text-2xl font-bold">{predictedAmount.toFixed()}</p>
 //               </div>
+//               <button
+//                 onClick={handleNavigate}
+//                 className={`mt-4 w-full p-2 rounded-md ${betAmount <= balance ? 'bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
+//                 disabled={betAmount > balance}
+//               >
+//                 Go to Next Page
+//               </button>
 //             </div>
 //           </div>
 //         );
@@ -224,12 +237,29 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'; // 画面遷移用
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase Authenticationをインポート
 
 export default function Table4({ data, data2 }) {
+  // Firebase Authentication
+  const auth = getAuth();
+  const navigate = useNavigate(); // React Routerのnavigateフック
+
+  // ステート管理
   // eslint-disable-next-line no-unused-vars
   const [currentTime, setCurrentTime] = useState(Date.now() / 1000); // 現在のUNIXタイムスタンプ（秒）
   const [selectedOdds, setSelectedOdds] = useState({}); // 選択したオッズのオブジェクト形式で保持
@@ -239,8 +269,7 @@ export default function Table4({ data, data2 }) {
   // eslint-disable-next-line no-unused-vars
   const [balance, setBalance] = useState(100); // 仮想残高（暗号資産から取得する値を後で設定）
   const [errorMessage, setErrorMessage] = useState(""); // エラーメッセージの状態管理
-
-  const navigate = useNavigate(); // React Routerのnavigateフック
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を管理
 
   // useEffectで毎秒タイムスタンプを更新
   useEffect(() => {
@@ -248,8 +277,20 @@ export default function Table4({ data, data2 }) {
       setCurrentTime(Date.now() / 1000);
     }, 1000);  // 1秒ごとに更新
 
-    return () => clearInterval(interval);  // コンポーネントがアンマウントされた時にインターバルをクリア
-  }, []);
+    // Firebase Authenticationのログイン状態を監視
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);  // ユーザーがログインしている場合
+      } else {
+        setIsLoggedIn(false); // ユーザーがログインしていない場合
+      }
+    });
+
+    return () => {
+      clearInterval(interval); // コンポーネントがアンマウントされた時にインターバルをクリア
+      unsubscribe(); // Authenticationの監視を解除
+    };
+  }, [auth]);
 
   // `data` や `data.events` が存在するか確認し、データが存在しない場合は "Loading..." を表示
   if ((!data || !Array.isArray(data.events) || data.events.length === 0) || (!data2 || !data2.odds)) {
@@ -304,13 +345,18 @@ export default function Table4({ data, data2 }) {
     }
   };
 
-  // 次の画面に進む処理（ここでは遷移不可のチェック）
+  // 次の画面に進む処理（ログイン状態をチェック）
   const handleNavigate = () => {
-    if (betAmount > balance) {
-      setErrorMessage("Your bet amount exceeds your available balance.");
+    if (!isLoggedIn) {
+      // ログインしていない場合は、ログイン画面にリダイレクト
+      navigate("/signIn");
     } else {
-      // 金額が残高内であれば遷移
-      navigate("/nextpage");  // 次の画面（ここでは仮のURL）
+      if (betAmount > balance) {
+        setErrorMessage("Your bet amount exceeds your available balance.");
+      } else {
+        // 金額が残高内であれば遷移
+        navigate("/nextpage");  // 次の画面（ここでは仮のURL）
+      }
     }
   };
 
@@ -320,7 +366,7 @@ export default function Table4({ data, data2 }) {
         const oddsData = data2.odds[event.id]; // event.id と odds のキーを一致させる
 
         return (
-          <div key={event.customId} className="bg-white py-2">
+          <div key={event.id || event.customId} className="bg-white py-2"> {/* `event.id` を優先して使用 */}
             {/* Season Name */}
             <div className="flex justify-center">
               {event.season ? event.season.name : "No Season Name"}
@@ -344,8 +390,8 @@ export default function Table4({ data, data2 }) {
               <div className="mt-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div
-                    className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'win' ? "bg-green-500 text-white font-bold" : ""}`}
-                    onClick={() => handleOddsClick(event.customId, 'win', convertFractionalToDecimal(oddsData.choices[0]?.fractionalValue).toFixed(2))}
+                    className={`text-center p-2 ${selectedOdds[event.id]?.choiceType === 'win' ? "bg-green-500 text-white font-bold" : ""}`}
+                    onClick={() => handleOddsClick(event.id, 'win', convertFractionalToDecimal(oddsData.choices[0]?.fractionalValue).toFixed(2))}
                   >
                     <h3 className="text-lg font-semibold">Win</h3>
                     <p className="text-xl text-blue-500">
@@ -354,8 +400,8 @@ export default function Table4({ data, data2 }) {
                   </div>
 
                   <div
-                    className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'draw' ? "bg-yellow-500 text-white font-bold" : ""}`}
-                    onClick={() => handleOddsClick(event.customId, 'draw', convertFractionalToDecimal(oddsData.choices[1]?.fractionalValue).toFixed(2))}
+                    className={`text-center p-2 ${selectedOdds[event.id]?.choiceType === 'draw' ? "bg-yellow-500 text-white font-bold" : ""}`}
+                    onClick={() => handleOddsClick(event.id, 'draw', convertFractionalToDecimal(oddsData.choices[1]?.fractionalValue).toFixed(2))}
                   >
                     <h3 className="text-lg font-semibold">Draw</h3>
                     <p className="text-xl text-green-500">
@@ -364,8 +410,8 @@ export default function Table4({ data, data2 }) {
                   </div>
 
                   <div
-                    className={`text-center p-2 ${selectedOdds[event.customId]?.choiceType === 'defeat' ? "bg-red-500 text-white font-bold" : ""}`}
-                    onClick={() => handleOddsClick(event.customId, 'defeat', convertFractionalToDecimal(oddsData.choices[2]?.fractionalValue).toFixed(2))}
+                    className={`text-center p-2 ${selectedOdds[event.id]?.choiceType === 'defeat' ? "bg-red-500 text-white font-bold" : ""}`}
+                    onClick={() => handleOddsClick(event.id, 'defeat', convertFractionalToDecimal(oddsData.choices[2]?.fractionalValue).toFixed(2))}
                   >
                     <h3 className="text-lg font-semibold">Defeat</h3>
                     <p className="text-xl text-blue-500">
@@ -409,3 +455,4 @@ export default function Table4({ data, data2 }) {
     </div>
   );
 }
+

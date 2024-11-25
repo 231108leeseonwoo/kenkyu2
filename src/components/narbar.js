@@ -1,31 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Link と useNavigate をインポート
-import { auth } from "./../firebase-config"; // Firebase auth をインポート
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../firebase-config"; // Firebase auth をインポート
 import { signOut } from "firebase/auth"; // Firebase の signOut 関数をインポート
+import { doc, getDoc } from "firebase/firestore"; // Firestoreからデータを取得するためにインポート
+import { db } from './../firebase-config'; // Firestoreのインスタンスをインポート
 
 export default function NavBar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を追跡する状態
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null); // ユーザー情報を保持する状態
   const navigate = useNavigate();
 
-  // Firebase の認証状態が変わった時に呼ばれる useEffect
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        setIsLoggedIn(true); // ユーザーがログインしている場合
+        setIsLoggedIn(true);
+        // ユーザーがログインした場合、Firestoreからそのユーザーの情報を取得
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserInfo(userDoc.data()); // ユーザーの情報を状態にセット
+        }
       } else {
-        setIsLoggedIn(false); // ユーザーがログアウトしている場合
+        setIsLoggedIn(false);
+        setUserInfo(null);
       }
     });
 
-    // クリーンアップ関数
     return () => unsubscribe();
   }, []);
 
-  // ログアウト処理
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Firebase の signOut 関数でログアウト
-      setIsLoggedIn(false); // ログアウト状態を反映
+      await signOut(auth); // FirebaseのsignOut関数でログアウト
+      setIsLoggedIn(false);
       navigate("/"); // ログアウト後、ログインページに遷移
     } catch (error) {
       console.error("Logout error: ", error);
@@ -56,44 +62,36 @@ export default function NavBar() {
             tabIndex={0}
             className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
           >
-            <li>
-              <a>Fixtures</a>
-            </li>
-            <li tabIndex={0}>
-              <a className="justify-between">Results</a>
-            </li>
-            <li>
-              <Link to="/odds" className="justify-between">Odds</Link> {/* Oddsリンクに変更 */}
-            </li>
+            <li><a>Fixtures</a></li>
+            <li tabIndex={0}><Link to="/results">Results</Link></li>
+            <li><Link to="/odds" className="justify-between">Odds</Link></li>
           </ul>
         </div>
-        <a href="/" className="btn btn-ghost normal-case text-xl">
-          LiveScores
-        </a>
+        <a href="/" className="btn btn-ghost normal-case text-xl">LiveScores</a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li>
-            <a>Fixtures</a>
-          </li>
-          <li tabIndex={0}>
-            <a>Results</a>
-          </li>
-          <li>
-            <Link to="/odds" className="justify-between">Odds</Link> {/* Oddsリンクに変更 */}
-          </li>
+          <li><a>Fixtures</a></li>
+          <li tabIndex={0}><Link to="/results">Profile</Link></li>
+          <li><Link to="/odds" className="justify-between">Odds</Link></li>
         </ul>
       </div>
       <div className="navbar-end">
-        {/* ログインしている場合はログアウトボタン、していない場合はログインボタンを表示 */}
         {isLoggedIn ? (
-          <button onClick={handleLogout} className="btn">
-            LOGOUT
-          </button>
+          <>
+            <div className="user-info">
+              {/* ユーザーがログインしている場合に表示 */}
+              {userInfo && (
+                <div>
+                  <p key="nickname">{userInfo.nickname}</p>
+                  <p key="rank">{userInfo.rank}</p>
+                </div>
+              )}
+            </div>
+            <button onClick={handleLogout} className="btn">LOGOUT</button>
+          </>
         ) : (
-          <Link to="/signin" className="btn">
-            LOGIN
-          </Link>
+          <Link to="/signin" className="btn">LOGIN</Link>
         )}
       </div>
     </div>

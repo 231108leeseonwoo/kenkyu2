@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";  // Firebase Auth をインポート
+// eslint-disable-next-line no-unused-vars
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -22,6 +24,6 @@ const app = initializeApp(firebaseConfig);
 // eslint-disable-next-line no-unused-vars
 const analytics = getAnalytics(app);
 const auth = getAuth(app); // Firebase Auth のインスタンスを作成
+const db = getFirestore(app);
 
-
-export { auth };  // auth をエ
+export { auth , db };  // auth をエ

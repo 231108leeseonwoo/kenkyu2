@@ -115,6 +115,7 @@ import { fetchFixtures } from "./lib/fetch-data";  // データ取得用の関�
 // eslint-disable-next-line no-unused-vars
 import { fetchFixtures2 } from "./lib/fetch-data2";  // データ取得用の関数
 import { fetchFixtures3 } from "./lib/fetch-data3";  // データ取得用の関数
+import ResultsPage from "./ResultsPage"; 
 
 
 
@@ -190,7 +191,8 @@ function App() {
             
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} /> {/* /signup で SignUp コンポーネントを表示 */}
-            
+            <Route path="/results" element={<ResultsPage />} /> {/* ResultsPageルートを追加 */}
+
             <Route path="/events/:customId" element={<Fixture data={fixtures} />} />
 
 

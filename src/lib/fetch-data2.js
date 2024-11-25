@@ -14,7 +14,9 @@ export const fetchFixtures2 = async () => {
       //  'x-rapidapi-key': '430bc19d3bmsh4254ee9452482e2p1561aajsn68f257e54593',
       //  'x-rapidapi-key': 'e489f99d34msh98ccd87b56a5cccp1e07c2jsn4cadb201c186',
       //  'x-rapidapi-key': '5655817fbcmshd8641d9f4953891p141a2djsn4971c7d09a5a',
-      'x-rapidapi-key': 'df9569fba5mshe505d8e6e9d0ff3p17e2d3jsn7f95643c1699',
+      // 'x-rapidapi-key': 'df9569fba5mshe505d8e6e9d0ff3p17e2d3jsn7f95643c1699',
+      // 'x-rapidapi-key': '2c4c71b5dbmsh1d98483ec2d7bd8p1918e2jsncc1073e80fe2',
+      'x-rapidapi-key': 'd0c67733b6mshfa8336a63dd6733p14e95ejsnbbd6af2c8c60',
       'x-rapidapi-host': 'sportapi7.p.rapidapi.com'
     }
   };
@@ -22,7 +24,7 @@ export const fetchFixtures2 = async () => {
   const result = await fetch(
     // "https://sportapi7.p.rapidapi.com/api/v1/sport/football/events/live",
     // "https://sportapi7.p.rapidapi.com/api/v1/odds/%7Bid%7D/featured-events/%7Bsport%7D",
-    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/odds/1/2024-03-05",
+    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/odds/1/2024-11-20",
     options
   )
     .then((response) => response.json())
