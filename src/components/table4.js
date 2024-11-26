@@ -24,6 +24,18 @@ export default function Table4({ data, data2 }) {
   const [errorMessage, setErrorMessage] = useState(""); // エラーメッセージの状態管理
   const [isLoggedIn, setIsLoggedIn] = useState(false); // ログイン状態を管理
 
+  // UNIXタイムスタンプを日本時間に変換する関数
+const convertTimestampToDate = (timestamp) => {
+  const date = new Date(timestamp * 1000); // ミリ秒に変換
+  return date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo',
+    hour: '2-digit',
+    minute: '2-digit',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+   }); // 日本時間でフォーマット
+};
+
   // useEffectで毎秒タイムスタンプを更新
   useEffect(() => {
     const interval = setInterval(() => {
@@ -173,7 +185,11 @@ const handleNavigate = () => {
 
         return (
           <div key={event.id || event.customId} className="bg-white py-2">
-            {/* Season Name */}
+  
+            <div className="flex justify-center">
+              {convertTimestampToDate(event.startTimestamp)}
+            </div>
+
             <div className="flex justify-center">
               {event.season ? event.season.name : "No Season Name"}
             </div>
