@@ -28,7 +28,7 @@ const SignUp = () => {
       await setDoc(doc(db, "users", user.uid), {
         nickname: nickname,  // ユーザーが入力したニックネーム
         email: email,        // ユーザーのメールアドレス
-        balance: 0,          // 初期残高は0
+        balance: 120,          // 初期残高は0
         bettingHistory: [],  // 初期ベッティング履歴は空の配列
         rank: "bronze",      // 初期ランク（仮にbronzeとする）
       });

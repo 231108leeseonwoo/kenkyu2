@@ -8,6 +8,7 @@ const db = getFirestore();
 const auth = getAuth();
 
 // 新しいユーザーをFirestoreに作成する関数
+// eslint-disable-next-line no-unused-vars
 const createUser = async (nickname, balance) => {
   const userId = auth.currentUser.uid;  // 現在ログインしているユーザーのIDを取得
   
@@ -15,7 +16,8 @@ const createUser = async (nickname, balance) => {
     // ユーザー情報をFirestoreの`users`コレクションに保存
     await setDoc(doc(db, "users", userId), {
       nickname: nickname,  // ユーザーのニックネーム
-      balance: balance,  // ユーザーの暗号資産残高（外部APIから取得したもの）
+    //  balance: balance,  // ユーザーの暗号資産残高（外部APIから取得したもの）
+      balance: balance,
       bettingHistory: [],  // ベッティング履歴（初期は空の配列）
       rank: "bronze"  // 初期ランク（仮にbronzeとする）
     });
