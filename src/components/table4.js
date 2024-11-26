@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'; // 画面遷移用
 import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase Authenticationをインポート
-import { getFirestore, doc, getDoc } from "firebase/firestore"; // Firestoreからデータを取得
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore"; // Firestoreからデータを取得 // Firestoreからデータを取得
 
 export default function Table4({ data, data2 }) {
   // Firebase Authentication
@@ -109,6 +109,37 @@ export default function Table4({ data, data2 }) {
     }
   };
 
+    // ベットがすべて的中したか確認し、的中した場合に残高を更新する関数
+    const handleBetResult = async () => {
+      let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
+  
+      // 各試合の結果をチェック
+      for (const eventId in selectedOdds) {
+        const selectedChoice = selectedOdds[eventId];
+        const oddsData = data2.odds[eventId];
+        const selectedChoiceIndex = ['win', 'draw', 'defeat'].indexOf(selectedChoice.choiceType);
+  
+        if (oddsData.choices[selectedChoiceIndex]?.winning !== true) {
+          allBetsWon = false; // 1つでも外れた場合はフラグをfalseに
+          break;
+        }
+      }
+  
+      // すべてのベットが的中した場合
+      if (allBetsWon) {
+        const newBalance = balance + predictedAmount;
+        setBalance(newBalance); // UI上の残高を更新
+  
+        // Firestoreのユーザーデータを更新
+        const userRef = doc(db, "users", auth.currentUser.uid);
+        await updateDoc(userRef, { balance: newBalance });
+  
+        alert('All bets won! Your balance has been updated.');
+      } else {
+        alert('One or more bets lost. No winnings added to your balance.');
+      }
+    };
+
   // 次の画面に進む処理（ログイン状態をチェック）
   const handleNavigate = () => {
     if (!isLoggedIn) {
@@ -118,7 +149,8 @@ export default function Table4({ data, data2 }) {
       if (betAmount > balance) {
         setErrorMessage("Your bet amount exceeds your available balance.");
       } else {
-        // 金額が残高内であれば遷移
+        // ベット結果の確認処理
+        handleBetResult();
         navigate("/nextpage");  // 次の画面（ここでは仮のURL）
       }
     }
@@ -130,7 +162,7 @@ export default function Table4({ data, data2 }) {
         const oddsData = data2.odds[event.id]; // event.id と odds のキーを一致させる
 
         return (
-          <div key={event.id || event.customId} className="bg-white py-2"> {/* `event.id` を優先して使用 */}
+          <div key={event.id || event.customId} className="bg-white py-2">
             {/* Season Name */}
             <div className="flex justify-center">
               {event.season ? event.season.name : "No Season Name"}
