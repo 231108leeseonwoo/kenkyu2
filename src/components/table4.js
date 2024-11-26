@@ -207,6 +207,10 @@ const handleNavigate = () => {
               </div>
             </div>
 
+            <div className="flex justify-center">
+              {event.status.description}
+            </div>
+
             {/* オッズの詳細表示 */}
             {oddsData && (
               <div className="mt-4">

@@ -26,7 +26,7 @@ export const fetchFixtures3 = async () => {
   const result = await fetch(
     // "https://sportapi7.p.rapidapi.com/api/v1/sport/football/events/live",
     // "https://sportapi7.p.rapidapi.com/api/v1/odds/%7Bid%7D/featured-events/%7Bsport%7D",
-    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/scheduled-events/2024-11-20",
+    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/scheduled-events/2024-11-26",
     options
   )
     .then((response) => response.json())
