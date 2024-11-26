@@ -110,35 +110,43 @@ export default function Table4({ data, data2 }) {
   };
 
     // ベットがすべて的中したか確認し、的中した場合に残高を更新する関数
-    const handleBetResult = async () => {
-      let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
-  
-      // 各試合の結果をチェック
-      for (const eventId in selectedOdds) {
-        const selectedChoice = selectedOdds[eventId];
-        const oddsData = data2.odds[eventId];
-        const selectedChoiceIndex = ['win', 'draw', 'defeat'].indexOf(selectedChoice.choiceType);
-  
-        if (oddsData.choices[selectedChoiceIndex]?.winning !== true) {
-          allBetsWon = false; // 1つでも外れた場合はフラグをfalseに
-          break;
-        }
-      }
-  
-      // すべてのベットが的中した場合
-      if (allBetsWon) {
-        const newBalance = balance + predictedAmount;
-        setBalance(newBalance); // UI上の残高を更新
-  
-        // Firestoreのユーザーデータを更新
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(userRef, { balance: newBalance });
-  
-        alert('All bets won! Your balance has been updated.');
-      } else {
-        alert('One or more bets lost. No winnings added to your balance.');
-      }
-    };
+const handleBetResult = async () => {
+  let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
+
+  // 各試合の結果をチェック
+  for (const eventId in selectedOdds) {
+    const selectedChoice = selectedOdds[eventId];
+    const oddsData = data2.odds[eventId];
+    const selectedChoiceIndex = ['win', 'draw', 'defeat'].indexOf(selectedChoice.choiceType);
+
+    if (oddsData.choices[selectedChoiceIndex]?.winning !== true) {
+      allBetsWon = false; // 1つでも外れた場合はフラグをfalseに
+      break;
+    }
+  }
+
+  // すべてのベットが的中した場合
+  if (allBetsWon) {
+    const newBalance = (balance - betAmount) + predictedAmount;
+    setBalance(newBalance); // UI上の残高を更新
+
+    // Firestoreのユーザーデータを更新
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    await updateDoc(userRef, { balance: newBalance });
+
+    alert('All bets won! Your balance has been updated.');
+  } else {
+    const newBalance = balance - betAmount; // 負けた場合、ベット金額を引く
+    setBalance(newBalance); // UI上の残高を更新
+
+    // Firestoreのユーザーデータを更新
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    await updateDoc(userRef, { balance: newBalance });
+
+    alert('One or more bets lost. Your balance has been updated.');
+  }
+};
+
 
   // 次の画面に進む処理（ログイン状態をチェック）
   const handleNavigate = () => {
@@ -151,7 +159,7 @@ export default function Table4({ data, data2 }) {
       } else {
         // ベット結果の確認処理
         handleBetResult();
-        navigate("/nextpage");  // 次の画面（ここでは仮のURL）
+        navigate("/nextPage");  // 次の画面（ここでは仮のURL）
       }
     }
   };
