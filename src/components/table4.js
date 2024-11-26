@@ -109,8 +109,11 @@ export default function Table4({ data, data2 }) {
     }
   };
 
-    // ベットがすべて的中したか確認し、的中した場合に残高を更新する関数
+   // ベット結果の処理
 const handleBetResult = async () => {
+  // まず、betAmountを引いて、残高を更新
+  const newBalance = balance - betAmount;  // betAmountを引く
+
   let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
 
   // 各試合の結果をチェック
@@ -127,16 +130,16 @@ const handleBetResult = async () => {
 
   // すべてのベットが的中した場合
   if (allBetsWon) {
-    const newBalance = (balance - betAmount) + predictedAmount;
-    setBalance(newBalance); // UI上の残高を更新
+    const finalBalance = newBalance + predictedAmount; // 予想金額を加算
+    setBalance(finalBalance); // UI上の残高を更新
 
     // Firestoreのユーザーデータを更新
     const userRef = doc(db, "users", auth.currentUser.uid);
-    await updateDoc(userRef, { balance: newBalance });
+    await updateDoc(userRef, { balance: finalBalance });
 
     alert('All bets won! Your balance has been updated.');
   } else {
-    const newBalance = balance - betAmount; // 負けた場合、ベット金額を引く
+    // もしベットに負けた場合、そのまま新しい残高を設定
     setBalance(newBalance); // UI上の残高を更新
 
     // Firestoreのユーザーデータを更新
@@ -147,22 +150,21 @@ const handleBetResult = async () => {
   }
 };
 
-
-  // 次の画面に進む処理（ログイン状態をチェック）
-  const handleNavigate = () => {
-    if (!isLoggedIn) {
-      // ログインしていない場合は、ログイン画面にリダイレクト
-      navigate("/signIn");
+// 次の画面に進む処理
+const handleNavigate = () => {
+  if (!isLoggedIn) {
+    // ログインしていない場合は、ログイン画面にリダイレクト
+    navigate("/signIn");
+  } else {
+    if (betAmount > balance) {
+      setErrorMessage("Your bet amount exceeds your available balance.");
     } else {
-      if (betAmount > balance) {
-        setErrorMessage("Your bet amount exceeds your available balance.");
-      } else {
-        // ベット結果の確認処理
-        handleBetResult();
-        navigate("/nextPage");  // 次の画面（ここでは仮のURL）
-      }
+      // ベット結果の確認処理
+      handleBetResult();
+      navigate("/nextPage");  // 次の画面（ここでは仮のURL）
     }
-  };
+  }
+};
 
   return (
     <div className="bg-gray-400 grid grid-cols-1 divide-y text-black">
