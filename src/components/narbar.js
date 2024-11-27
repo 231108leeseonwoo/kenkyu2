@@ -62,8 +62,8 @@ export default function NavBar() {
             tabIndex={0}
             className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
           >
-            <li><a>Fixtures</a></li>
-            <li tabIndex={0}><Link to="/results">Results</Link></li>
+            <li tabIndex={0}><Link to="/nextPage">bettingHistory</Link></li>
+            <li tabIndex={0}><Link to="/results">Profile</Link></li>
             <li><Link to="/odds" className="justify-between">Odds</Link></li>
           </ul>
         </div>
@@ -71,7 +71,7 @@ export default function NavBar() {
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li><a>Fixtures</a></li>
+          <li tabIndex={0}><Link to="/nextPage">bettingHistory</Link></li>
           <li tabIndex={0}><Link to="/results">Profile</Link></li>
           <li><Link to="/odds" className="justify-between">Odds</Link></li>
         </ul>
@@ -85,6 +85,7 @@ export default function NavBar() {
                 <div>
                   <p key="nickname">{userInfo.nickname}</p>
                   <p key="rank">{userInfo.rank}</p>
+                  <p key="balance">{userInfo.balance.toFixed(2)} </p>
                 </div>
               )}
             </div>

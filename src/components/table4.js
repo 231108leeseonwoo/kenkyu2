@@ -351,7 +351,7 @@ const handleNavigate = () => {
               </div>
               <div className="mt-2">
                 <h3 className="text-lg">Predicted Earnings:</h3>
-                <p className="text-2xl font-bold">{predictedAmount.toFixed()}</p>
+                <p className="text-2xl font-bold">{predictedAmount.toFixed(2)}</p>
               </div>
               <button
                 onClick={handleNavigate}
