@@ -169,6 +169,7 @@ const handleBetResult = async () => {
     // 勝敗を確認して結果を反映
     if (oddsData?.choices?.[selectedChoiceIndex]?.winning !== true) {
       allBetsWon = false;
+      totalOdds *= selectedChoice.oddsValue;
     } else {
       // 勝った場合、オッズを掛け算して累積
       totalOdds *= selectedChoice.oddsValue; // オッズの掛け算
@@ -349,11 +350,11 @@ const handleNavigate = () => {
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               <div className="mt-2">
                 <h3 className="text-lg">Total Odds:</h3>
-                <p className="text-2xl font-bold">{totalOdds.toFixed(2)}</p>
+                <p className="text-2xl font-bold">{totalOdds.toFixed(4)}</p>
               </div>
               <div className="mt-2">
                 <h3 className="text-lg">Predicted Earnings:</h3>
-                <p className="text-2xl font-bold">{predictedAmount.toFixed(1)}</p>
+                <p className="text-2xl font-bold">{predictedAmount.toFixed(2)}</p>
               </div>
               <button
                 onClick={handleNavigate}

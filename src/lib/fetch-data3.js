@@ -20,7 +20,8 @@ export const fetchFixtures3 = async () => {
     // 'x-rapidapi-key': 'c19364805amsh5cb8a303aabfb29p1f6d8ejsn4b6549efea8b',
     // 'x-rapidapi-key': 'f057948334mshab42a85484757b2p1639f9jsn97e2e3baefd8',
     // 'x-rapidapi-key': 'b75a2fd412msh3b7e6b11993cad1p14a731jsnfb397e80f3f6',
-    'x-rapidapi-key': '2ad9da0416msh644f7750474c634p1665d5jsn3f731be4f169',
+    // 'x-rapidapi-key': '2ad9da0416msh644f7750474c634p1665d5jsn3f731be4f169',
+    'x-rapidapi-key': '55e297ab74msh4d9e8dccd6e05ddp119798jsnaffbf813c304',
       'x-rapidapi-host': 'sportapi7.p.rapidapi.com'
     }
   };
@@ -28,7 +29,7 @@ export const fetchFixtures3 = async () => {
   const result = await fetch(
     // "https://sportapi7.p.rapidapi.com/api/v1/sport/football/events/live",
     // "https://sportapi7.p.rapidapi.com/api/v1/odds/%7Bid%7D/featured-events/%7Bsport%7D",
-    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/scheduled-events/2024-11-26",
+    "https://sportapi7.p.rapidapi.com/api/v1/sport/football/scheduled-events/2024-11-27",
     options
   )
     .then((response) => response.json())
