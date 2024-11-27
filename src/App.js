@@ -116,6 +116,7 @@ import { fetchFixtures } from "./lib/fetch-data";  // データ取得用の関�
 import { fetchFixtures2 } from "./lib/fetch-data2";  // データ取得用の関数
 import { fetchFixtures3 } from "./lib/fetch-data3";  // データ取得用の関数
 import ResultsPage from "./ResultsPage"; 
+import NextPage from "./components/nextPage";
 
 
 
@@ -192,6 +193,7 @@ function App() {
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} /> {/* /signup で SignUp コンポーネントを表示 */}
             <Route path="/results" element={<ResultsPage />} /> {/* ResultsPageルートを追加 */}
+            <Route path="/nextPage" element={<NextPage />} />
 
             <Route path="/events/:customId" element={<Fixture data={fixtures} />} />
 
