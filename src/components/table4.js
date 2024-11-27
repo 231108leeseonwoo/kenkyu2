@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'; // 画面遷移用
 import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase Authenticationをインポート
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore"; // Firestoreからデータを取得 // Firestoreからデータを取得
+// eslint-disable-next-line no-unused-vars
+import { getFirestore, doc, getDoc, updateDoc, setDoc, arrayUnion } from "firebase/firestore"; // Firestoreからデータを取得 // Firestoreからデータを取得
 
 export default function Table4({ data, data2 }) {
   // Firebase Authentication
@@ -58,7 +59,7 @@ const convertTimestampToDate = (timestamp) => {
         });
       } else {
         setIsLoggedIn(false); // ユーザーがログインしていない場合
-        setBalance(0); // ログアウト時は残高をリセット
+        // setBalance(0); // ログアウト時は残高をリセット
       }
     });
 
@@ -121,12 +122,18 @@ const convertTimestampToDate = (timestamp) => {
     }
   };
 
-   // ベット結果の処理
+
 const handleBetResult = async () => {
   // まず、betAmountを引いて、残高を更新
-  const newBalance = balance - betAmount;  // betAmountを引く
+  const newBalance = balance - betAmount;  // betAmountを引いて残高を更新
 
   let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
+
+  // 試合情報とベット情報を格納するための配列
+  const bettingHistory = [];
+
+  let predictedAmount = 0; // 勝った場合に追加される金額
+  let totalOdds = 1; // すべてのオッズを掛け合わせて算出するオッズ
 
   // 各試合の結果をチェック
   for (const eventId in selectedOdds) {
@@ -134,10 +141,91 @@ const handleBetResult = async () => {
     const oddsData = data2.odds[eventId];
     const selectedChoiceIndex = ['win', 'draw', 'defeat'].indexOf(selectedChoice.choiceType);
 
-    if (oddsData.choices[selectedChoiceIndex]?.winning !== true) {
-      allBetsWon = false; // 1つでも外れた場合はフラグをfalseに
-      break;
+    // 試合の情報を取得
+    const event = data.events.find(e => e.id === eventId);
+
+    // チーム情報が存在するかチェック
+    const homeTeam = event?.homeTeam?.name || "No Home Team"; // homeTeamが存在しない場合は"Not Available"
+    const awayTeam = event?.awayTeam?.name || "No Away Team"; // awayTeamが存在しない場合は"Not Available"
+    const homeScore = event?.homeScore?.current || "-"; // スコアが無ければ"-"
+    const awayScore = event?.awayScore?.current || "-"; // スコアが無ければ"-"
+
+    // 試合の詳細情報を格納
+    const eventDetails = {
+      eventId,
+      homeTeam,
+      awayTeam,
+      homeScore,
+      awayScore,
+      oddsChoice: selectedChoice.choiceType,
+      oddsValue: selectedChoice.oddsValue,
+      result: oddsData?.choices?.[selectedChoiceIndex]?.winning ? '的中' : '外れ', // 安全策を加えて確認
+    };
+
+    bettingHistory.push(eventDetails); // bettingHistoryに追加
+
+    // 勝敗を確認して結果を反映
+    if (oddsData?.choices?.[selectedChoiceIndex]?.winning !== true) {
+      allBetsWon = false;
+    } else {
+      // 勝った場合、オッズを掛け算して累積
+      totalOdds *= selectedChoice.oddsValue; // オッズの掛け算
     }
+  }
+
+  // 勝利した場合、予測金額を計算
+  if (allBetsWon) {
+    predictedAmount = betAmount * totalOdds; // 予想金額はbetAmount * totalOdds
+  }
+
+  // Firestoreのユーザーデータを更新
+  const userRef = doc(db, "users", auth.currentUser.uid);
+  await updateDoc(userRef, { balance: newBalance }); // 残高更新
+
+  // FirestoreのbettingHistoryにベット情報を追加
+  const userBettingHistoryRef = doc(db, "users", auth.currentUser.uid); // ユーザーのドキュメント内のbettingHistory
+
+  // ドキュメントが存在するか確認し、存在しなければ新規作成、存在すれば次のbettingIDを決める
+  const userDoc = await getDoc(userBettingHistoryRef);
+  let bettingDocId;
+
+  if (!userDoc.exists()) {
+    // 最初のベットの場合、betting1として保存
+    bettingDocId = "betting1";
+    await setDoc(userBettingHistoryRef, {
+      bettingHistory: [
+        {
+          bettingDocId,
+          bets: bettingHistory, // 3試合や5試合の情報を1つの配列にまとめる
+          betAmount,
+          predictedAmount,
+          totalOdds,
+          allBetsWon, // すべてのベットが当たったかのフラグ
+          result: allBetsWon ? 'won' : 'lost', // 結果が「すべて当たった」か「1つでも外れた」か
+        },
+      ],
+    });
+  } else {
+    // 既存のベット情報を取得して、次のbettingIDを計算
+    const existingBettingHistory = userDoc.data().bettingHistory || [];
+    const nextBettingId = existingBettingHistory.length + 1;
+    bettingDocId = `betting${nextBettingId}`;
+
+    // 新しいベットをbettingHistoryに追加
+    await updateDoc(userBettingHistoryRef, {
+      bettingHistory: [
+        ...existingBettingHistory,
+        {
+          bettingDocId,
+          bets: bettingHistory,
+          betAmount,
+          predictedAmount,
+          totalOdds,
+          allBetsWon,
+          result: allBetsWon ? 'won' : 'lost',
+        },
+      ],
+    });
   }
 
   // すべてのベットが的中した場合
@@ -145,8 +233,7 @@ const handleBetResult = async () => {
     const finalBalance = newBalance + predictedAmount; // 予想金額を加算
     setBalance(finalBalance); // UI上の残高を更新
 
-    // Firestoreのユーザーデータを更新
-    const userRef = doc(db, "users", auth.currentUser.uid);
+    // Firestoreの残高更新
     await updateDoc(userRef, { balance: finalBalance });
 
     alert('All bets won! Your balance has been updated.');
@@ -154,13 +241,12 @@ const handleBetResult = async () => {
     // もしベットに負けた場合、そのまま新しい残高を設定
     setBalance(newBalance); // UI上の残高を更新
 
-    // Firestoreのユーザーデータを更新
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    await updateDoc(userRef, { balance: newBalance });
-
     alert('One or more bets lost. Your balance has been updated.');
   }
 };
+
+
+
 
 // 次の画面に進む処理
 const handleNavigate = () => {
