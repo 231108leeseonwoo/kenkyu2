@@ -142,13 +142,15 @@ const handleBetResult = async () => {
     const selectedChoiceIndex = ['win', 'draw', 'defeat'].indexOf(selectedChoice.choiceType);
 
     // 試合の情報を取得
-    const event = data.events.find(e => e.id === eventId);
+    //const event = data.events.find(e => e.id === eventId);
+    const event = data.events.find(e => String(e.id) === eventId);
+
 
     // チーム情報が存在するかチェック
     const homeTeam = event?.homeTeam?.name || "No Home Team"; // homeTeamが存在しない場合は"Not Available"
     const awayTeam = event?.awayTeam?.name || "No Away Team"; // awayTeamが存在しない場合は"Not Available"
-    const homeScore = event?.homeScore?.current || "-"; // スコアが無ければ"-"
-    const awayScore = event?.awayScore?.current || "-"; // スコアが無ければ"-"
+    const homeScore = event?.homeScore?.current || "0"; // スコアが無ければ"-"
+    const awayScore = event?.awayScore?.current || "0"; // スコアが無ければ"-"
 
     // 試合の詳細情報を格納
     const eventDetails = {
@@ -351,7 +353,7 @@ const handleNavigate = () => {
               </div>
               <div className="mt-2">
                 <h3 className="text-lg">Predicted Earnings:</h3>
-                <p className="text-2xl font-bold">{predictedAmount.toFixed(2)}</p>
+                <p className="text-2xl font-bold">{predictedAmount.toFixed(1)}</p>
               </div>
               <button
                 onClick={handleNavigate}
