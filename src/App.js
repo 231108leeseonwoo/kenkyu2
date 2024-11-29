@@ -193,7 +193,7 @@ function App() {
             <Route path="/signIn" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} /> {/* /signup で SignUp コンポーネントを表示 */}
             <Route path="/results" element={<ResultsPage />} /> {/* ResultsPageルートを追加 */}
-            <Route path="/nextPage" element={<NextPage />} />
+            <Route path="/nextPage" element={<NextPage data={fixtures3} data2={fixtures2}/>} />
 
             <Route path="/events/:customId" element={<Fixture data={fixtures} />} />
 
