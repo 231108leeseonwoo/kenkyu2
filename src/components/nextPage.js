@@ -31,7 +31,7 @@ export default function NextPage(data, data2) {
 
     fetchBettingHistory();
   }, [db, auth]);
-
+  
   // 選択したベッティング履歴の詳細を表示
   const handleBettingHistoryClick = (bettingDocId) => {
     const selectedHistory = bettingHistory.find(bet => bet.bettingDocId === bettingDocId);
@@ -50,10 +50,7 @@ export default function NextPage(data, data2) {
 
     const { bettingDocId, betAmount } = selectedBettingHistory;
   
-    // まず、betAmountを引いて、残高を更新
-    const newBalance = balance - betAmount;  // betAmountを引いて残高を更新
-  
-    let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
+    let allBetsWon = true;
   
     // data.eventsが存在することを確認
     if (!data || !data.data || !data.data.events || !Array.isArray(data.data.events)) {
@@ -109,7 +106,7 @@ export default function NextPage(data, data2) {
   
     // Firestoreのユーザーデータを更新
     const userRef = doc(db, "users", auth.currentUser.uid);
-    await updateDoc(userRef, { balance: newBalance }); // 残高更新
+  
   
     // FirestoreのbettingHistoryを取得
     const userBettingHistoryRef = doc(db, "users", auth.currentUser.uid);
@@ -142,7 +139,7 @@ export default function NextPage(data, data2) {
   
     // すべてのベットが的中した場合
     if (allBetsWon) {
-      const finalBalance = newBalance + predictedAmount; // 予想金額を加算
+      const finalBalance = balance + predictedAmount; // 予想金額を加算
       setBalance(finalBalance); // UI上の残高を更新
   
       // Firestoreの残高更新
@@ -151,7 +148,7 @@ export default function NextPage(data, data2) {
       alert('All bets won! Your balance has been updated.');
     } else {
       // もしベットに負けた場合、そのまま新しい残高を設定
-      setBalance(newBalance); // UI上の残高を更新
+  
   
       alert('One or more bets lost. Your balance has been updated.');
     }

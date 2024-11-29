@@ -128,6 +128,7 @@ const handleBetResult = async () => {
   const newBalance = balance - betAmount;  // betAmountを引いて残高を更新
 
   let allBetsWon = true; // すべてのベットが当たったかを確認するフラグ
+  let chargeStatus = true;
 
   // 試合情報とベット情報を格納するための配列
   const bettingHistory = [];
@@ -199,6 +200,7 @@ const handleBetResult = async () => {
       bettingHistory: [
         {
           bettingDocId,
+          chargeStatus,
           bets: bettingHistory, // 3試合や5試合の情報を1つの配列にまとめる
           betAmount,
           predictedAmount,
@@ -220,6 +222,7 @@ const handleBetResult = async () => {
         ...existingBettingHistory,
         {
           bettingDocId,
+          chargeStatus,
           bets: bettingHistory,
           betAmount,
           predictedAmount,
