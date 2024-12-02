@@ -320,8 +320,24 @@ export default function NextPage(data, data2) {
             <span>{betting.betAmount}</span>
           </div>
           <div className="flex justify-between">
+            <span className="font-semibold">Total Odds:</span>
+            <span>{betting.totalOdds.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
             <span className="font-semibold">Predicted Earnings:</span>
-            <span>{betting.predictedAmount.toFixed(2)}</span>
+            <span>{betting.predictedAmount.toFixed(0)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-semibold text-yellow-500">結果:</span>
+            <span
+              className={`
+                ${betting.result === '開始前' ? 'text-green-500' : ''}
+                ${betting.result === '的中' ? 'text-blue-500' : ''}
+                ${betting.result === '外れ' ? 'text-red-500' : ''}
+              `}
+            >
+              {betting.result}
+            </span>
           </div>
         </div>
       ))}
