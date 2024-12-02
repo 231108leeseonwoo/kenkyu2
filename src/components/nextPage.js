@@ -51,6 +51,7 @@ export default function NextPage(data, data2) {
     const { bettingDocId, betAmount } = selectedBettingHistory;
   
     let allBetsWon = true;
+    let status2 = true;
   
     // data.eventsが存在することを確認
     if (!data || !data.data || !data.data.events || !Array.isArray(data.data.events)) {
@@ -73,10 +74,29 @@ export default function NextPage(data, data2) {
       // 試合の情報を取得
       const event = data.data.events.find(e => e.id === parseInt(eventId));  // eventIdを基に該当試合を検索
       const event2 = data.data2.odds[eventId];
+
+      let result = "開始前";
+   
+
+      // if (event2?.choices?.[selectedChoiceIndex]?.winning !== undefined) {
+      //   // 試合が開始しており、結果がわかる場合
+      //   result = event2.choices[selectedChoiceIndex].winning ? '的中' : '外れ';
+      //   status2 = false;
+      // }
+
+      if (event2?.choices?.[selectedChoiceIndex]?.winning === undefined) {
+        // 試合が開始しており、結果がわかる場合
+       
+        status2 = false;
+      }
+      else {
+        result = event2.choices[selectedChoiceIndex].winning ? '的中' : '外れ';
+      }
+
       
       if (event) {
-        const homeScore = event?.homeScore?.current ?? 0;  // スコアが無ければ0を設定
-        const awayScore = event?.awayScore?.current ?? 0;  // スコアが無ければ0を設定
+        const homeScore = event?.homeScore?.current ?? '-';  // スコアが無ければ0を設定
+        const awayScore = event?.awayScore?.current ?? '-';  // スコアが無ければ0を設定
   
        
   
@@ -86,11 +106,13 @@ export default function NextPage(data, data2) {
             if (event2?.choices?.[selectedChoiceIndex]?.winning !== true) {
               allBetsWon = false;
             } 
+
             return {
               ...betItem,
               homeScore,  // 最新スコアを数値として更新
               awayScore,  // 最新スコアを数値として更新
-              result: event2?.choices?.[selectedChoiceIndex]?.winning ? '的中' : '外れ', // 結果として的中・外れを設定
+            //  result: event2?.choices?.[selectedChoiceIndex]?.winning ? '的中' : '外れ', // 結果として的中・外れを設定
+              result : result,
             };
           }
           return betItem;
@@ -100,9 +122,12 @@ export default function NextPage(data, data2) {
   
     // 勝利した場合、予測金額を計算
     let predictedAmount = 0;
-    if (allBetsWon) {
-      predictedAmount = betAmount * selectedBettingHistory.totalOdds; // betAmount と totalOdds を掛けて予測金額を計算
-    }
+    // if (allBetsWon) {
+    //   predictedAmount = betAmount * selectedBettingHistory.totalOdds; // betAmount と totalOdds を掛けて予測金額を計算
+    // }
+    predictedAmount = betAmount * selectedBettingHistory.totalOdds;
+
+  
   
     // Firestoreのユーザーデータを更新
     const userRef = doc(db, "users", auth.currentUser.uid);
@@ -116,15 +141,46 @@ export default function NextPage(data, data2) {
       // 既存のベット情報がある場合、bettingHistoryを更新
       const existingBettingHistory = userDoc.data().bettingHistory || [];
   
+    
       // 該当するbettingDocIdの履歴を見つけて更新
       const updatedBettingHistory = existingBettingHistory.map(bet => {
         if (bet.bettingDocId === bettingDocId) {
-          // 該当する履歴があった場合、その履歴を上書き
+          // 該当する履歴があった場合、その履歴を上書き 
+        
+          if (allBetsWon && bet.chargeStatus) {
+            const finalBalance = balance + predictedAmount; // 予想金額を加算
+            
+            setBalance(finalBalance); // UI上の残高を更新
+        
+            // Firestoreの残高更新
+            updateDoc(userRef, { balance: finalBalance });
+        
+            alert('All bets won! Your balance has been updated.');
+
+            return {
+              ...bet,
+              bets: selectedBettingHistory.bets, // 更新されたbets情報を上書き
+              allBetsWon, // すべてのベットが当たったかどうか
+              
+              chargeStatus: false,
+              result: '的中', // 結果として全て勝ったか負けたか
+              
+              predictedAmount, // Firestoreに保存する予測金額
+            };
+         
+          } else {
+            // もしベットに負けた場合、そのまま新しい残高を設定
+        
+        
+            alert('One or more bets lost. Your balance has been updated.');
+          }
+
           return {
             ...bet,
             bets: selectedBettingHistory.bets, // 更新されたbets情報を上書き
             allBetsWon, // すべてのベットが当たったかどうか
-            result: allBetsWon ? 'won' : 'lost', // 結果として全て勝ったか負けたか
+            result: allBetsWon ? '的中' : (status2 ? '外れ' : '開始前'), 
+            
             predictedAmount, // Firestoreに保存する予測金額
           };
         }
@@ -138,20 +194,20 @@ export default function NextPage(data, data2) {
     }
   
     // すべてのベットが的中した場合
-    if (allBetsWon) {
-      const finalBalance = balance + predictedAmount; // 予想金額を加算
-      setBalance(finalBalance); // UI上の残高を更新
+    // if (allBetsWon) {
+    //   const finalBalance = balance + predictedAmount; // 予想金額を加算
+    //   setBalance(finalBalance); // UI上の残高を更新
   
-      // Firestoreの残高更新
-      await updateDoc(userRef, { balance: finalBalance });
+    //   // Firestoreの残高更新
+    //   await updateDoc(userRef, { balance: finalBalance });
   
-      alert('All bets won! Your balance has been updated.');
-    } else {
-      // もしベットに負けた場合、そのまま新しい残高を設定
+    //   alert('All bets won! Your balance has been updated.');
+    // } else {
+    //   // もしベットに負けた場合、そのまま新しい残高を設定
   
   
-      alert('One or more bets lost. Your balance has been updated.');
-    }
+    //   alert('One or more bets lost. Your balance has been updated.');
+    // }
     console.log(data);  // デバッグ用にdataを出力
   };
   
